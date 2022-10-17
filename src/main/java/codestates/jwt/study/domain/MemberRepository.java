@@ -1,6 +1,6 @@
-package codestates.jwt.study.repostitory;
+package codestates.jwt.study.domain;
 
-import codestates.jwt.study.model.Member;
+import codestates.jwt.study.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,6 +1,6 @@
-package codestates.jwt.study.oauth;
+package codestates.jwt.study.domain.oauth;
 
-import codestates.jwt.study.model.Member;
+import codestates.jwt.study.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

@@ -1,11 +1,11 @@
-package codestates.jwt.study.filter;
+package codestates.jwt.study.web.filter;
 
-import codestates.jwt.study.model.Member;
-import codestates.jwt.study.oauth.PrincipalDetails;
-import codestates.jwt.study.repostitory.MemberRepository;
+import codestates.jwt.study.domain.Member;
+import codestates.jwt.study.domain.oauth.PrincipalDetails;
+import codestates.jwt.study.domain.MemberRepository;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,10 +17,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static codestates.jwt.study.domain.util.JwtUtil.*;
 //Security filter → 권한 및 인증이 필요한 주소를 요청 시 BasicAuthenticationFilter를 반드시 진행하게 되어있습니다.
 //권한이나 인증이 필요하지 않을 경우 BasicAuthenticationFilter는 적용되지 않습니다.
 
 //인증 권한이 필요한 url에 접속할 때 이 필터가 적용되도록 할 것이다.
+@Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final MemberRepository memberRepository;
@@ -32,18 +35,18 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        System.out.println("인증/권한이 필요한 url 요청됨");
+        log.info("인증/권한이 필요한 url 요청 - {}", request.getRequestURI());
 
-        String jwtHeader = request.getHeader("Authorization");
+        String jwtHeader = request.getHeader(AUTHORIZATION);
 
-        if (jwtHeader == null || !jwtHeader.startsWith("Bearer ")) {
+        if (jwtHeader == null || !jwtHeader.startsWith(PREFIX)) {
             chain.doFilter(request, response);
             return;
         }
 
-        String token = jwtHeader.replace("Bearer ", "");
+        String token = jwtHeader.replace(PREFIX, "");
 //        DecodedJWT decodedJWT = JWT.decode(token);
-        String email = JWT.require(Algorithm.HMAC512("cos_jwt_token"))
+        String email = JWT.require(Algorithm.HMAC512(SECRET_KEY))
                 .build()
                 .verify(token)
                 .getClaim("email")

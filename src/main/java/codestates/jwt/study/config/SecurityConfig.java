@@ -1,8 +1,8 @@
 package codestates.jwt.study.config;
 
-import codestates.jwt.study.filter.JwtAuthenticationFilter;
-import codestates.jwt.study.filter.JwtAuthorizationFilter;
-import codestates.jwt.study.repostitory.MemberRepository;
+import codestates.jwt.study.web.filter.JwtAuthenticationFilter;
+import codestates.jwt.study.web.filter.JwtAuthorizationFilter;
+import codestates.jwt.study.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +59,7 @@ public class SecurityConfig {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
             builder
                     .addFilter(corsFilter)
-                    .addFilter(new JwtAuthenticationFilter(authenticationManager))
+//                    .addFilter(new JwtAuthenticationFilter(authenticationManager))
                     .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository));
             //만일 이렇게 필터들을 추가하면, 기존의 필터체인들도 똑같이 수행되나??
         }

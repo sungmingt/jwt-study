@@ -1,4 +1,4 @@
-package codestates.jwt.study.model;
+package codestates.jwt.study.domain;
 
 import lombok.Data;
 
@@ -28,5 +28,6 @@ public class Member {
         }
         return new ArrayList<>();
     }
+
 
 }

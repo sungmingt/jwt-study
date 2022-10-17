@@ -1,4 +1,4 @@
-package codestates.jwt.study.filter;
+package codestates.jwt.study.web.filter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;

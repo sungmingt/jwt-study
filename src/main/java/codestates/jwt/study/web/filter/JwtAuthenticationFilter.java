@@ -1,11 +1,10 @@
-package codestates.jwt.study.filter;
+package codestates.jwt.study.web.filter;
 
-import codestates.jwt.study.model.Member;
-import codestates.jwt.study.oauth.PrincipalDetails;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import codestates.jwt.study.domain.Member;
+import codestates.jwt.study.domain.oauth.PrincipalDetails;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,9 +16,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
+
+import static codestates.jwt.study.domain.util.JwtUtil.*;
 
 @RequiredArgsConstructor   //Jwt 로그인 처리(Authentication)를 위한 Filter
+@Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -45,20 +46,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override //인증에 성공했을 경우 작동
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        System.out.println("SuccessfulAuthentication");
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+        log.info("인증 성공 ={}", principalDetails.getUsername());
 
-        String jwtToken = JWT.create()
-                .withSubject("cos_jwt_token")
-                .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 1000 * 10)))
-                .withClaim("username", principalDetails.getUsername())
-                .sign(Algorithm.HMAC512("cos_jwt_token"));
-        response.addHeader("Authorization", "Bearer " + jwtToken);
-
-//        String refreshToken = JWT.create()
-//                .withSubject("cos_jwt_token")
-//                .withExpiresAt(new Date(System.currentTimeMillis() + (60 * 1000 * 30)))
-//                .sign(Algorithm.HMAC512("cos_jwt_token"));
-//        response.addHeader("Refresh_Token", "Bearer " + refreshToken);
+//        String token = createAccessToken(principalDetails.getUsername());
+//        response.addHeader(AUTHORIZATION, PREFIX + token);
     }
 }
