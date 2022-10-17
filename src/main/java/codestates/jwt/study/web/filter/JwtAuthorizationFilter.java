@@ -3,8 +3,7 @@ package codestates.jwt.study.web.filter;
 import codestates.jwt.study.domain.Member;
 import codestates.jwt.study.domain.oauth.PrincipalDetails;
 import codestates.jwt.study.domain.MemberRepository;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import codestates.jwt.study.domain.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,17 +26,19 @@ import static codestates.jwt.study.domain.util.JwtUtil.*;
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository, JwtUtil jwtUtil) {
         super(authenticationManager);
         this.memberRepository = memberRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         log.info("인증/권한이 필요한 url 요청 - {}", request.getRequestURI());
 
-        String jwtHeader = request.getHeader(AUTHORIZATION);
+        String jwtHeader = request.getHeader(ACCESS_TOKEN_NAME);
 
         if (jwtHeader == null || !jwtHeader.startsWith(PREFIX)) {
             chain.doFilter(request, response);
@@ -46,11 +47,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         String token = jwtHeader.replace(PREFIX, "");
 //        DecodedJWT decodedJWT = JWT.decode(token);
-        String email = JWT.require(Algorithm.HMAC512(SECRET_KEY))
-                .build()
-                .verify(token)
-                .getClaim("email")
-                .asString();
+        String email = jwtUtil.verifyToken(token);
 
         if (email != null) {
             Member memberEntity = memberRepository.findByEmail(email)

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private MemberRepository memberRepository;
+    private final MemberRepository memberRepository;
 
     public void signUpUser(Member member) {
         memberRepository.save(member);
