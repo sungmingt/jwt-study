@@ -1,6 +1,7 @@
 package codestates.jwt.study.config;
 
-import codestates.jwt.study.web.filter.JwtAuthenticationFilter;
+import codestates.jwt.study.domain.redis.RedisUtil;
+import codestates.jwt.study.domain.util.JwtUtil;
 import codestates.jwt.study.web.filter.JwtAuthorizationFilter;
 import codestates.jwt.study.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +61,7 @@ public class SecurityConfig {
             builder
                     .addFilter(corsFilter)
 //                    .addFilter(new JwtAuthenticationFilter(authenticationManager))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository));
+                    .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository, new JwtUtil(new RedisUtil())));
             //만일 이렇게 필터들을 추가하면, 기존의 필터체인들도 똑같이 수행되나??
         }
     }
