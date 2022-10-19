@@ -10,6 +10,7 @@ public class AuthService {
     private final MemberRepository memberRepository;
 
     public void signUpUser(Member member) {
+        member.setRoles("USER");
         memberRepository.save(member);
     }
 
