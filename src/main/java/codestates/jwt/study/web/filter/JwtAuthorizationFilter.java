@@ -46,7 +46,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         String token = jwtHeader.replace(PREFIX, "");
-//        DecodedJWT decodedJWT = JWT.decode(token);
         String email = jwtUtil.verifyToken(token);
 
         if (email != null) {
