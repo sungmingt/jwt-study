@@ -52,7 +52,7 @@ public class MemberController {
             final String refreshToken = jwtUtil.createRefreshToken(member.getEmail());
 
             redisUtil.setDataExpire(member.getEmail(), refreshToken, REFRESH_TOKEN_VALIDATION_SECOND);
-            res.addHeader(ACCESS_TOKEN_NAME, PREFIX + accessToken);
+            res.addHeader(ACCESS_TOKEN_NAME, accessToken);
             res.addHeader(REFRESH_TOKEN_NAME, refreshToken);
             return new Response("success", "로그인에 성공했습니다.");
     }
