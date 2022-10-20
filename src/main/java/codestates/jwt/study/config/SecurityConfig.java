@@ -1,9 +1,7 @@
 package codestates.jwt.study.config;
 
-import codestates.jwt.study.domain.redis.RedisUtil;
-import codestates.jwt.study.domain.util.JwtUtil;
-import codestates.jwt.study.web.filter.JwtAuthorizationFilter;
 import codestates.jwt.study.domain.MemberRepository;
+import codestates.jwt.study.web.filter.JwtAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +12,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
@@ -23,6 +22,7 @@ public class SecurityConfig {
 
     private final CorsFilter corsFilter;
     private final MemberRepository memberRepository;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -35,13 +35,12 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable() //기본 인증 로그인 방식이다.
                 .apply(new CustomDsl())/////////////
-
                 .and()
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
-                .antMatchers().access("hasRole('ROLE_USER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
                 .antMatchers("/api/v1/manager/**").access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
                 .antMatchers("/api/v1/admin/**").access("hasRole('ROLE_ADMIN')")
+                .antMatchers("/api/v1/user/**").authenticated()
                 .anyRequest().permitAll();
 
 //                .addFilter(corsFilter) // 추가
@@ -60,16 +59,15 @@ public class SecurityConfig {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
             builder
                     .addFilter(corsFilter)
-//                    .addFilter(new JwtAuthenticationFilter(authenticationManager))
-                    .addFilter(new JwtAuthorizationFilter(authenticationManager, memberRepository, new JwtUtil(new RedisUtil())));
+//                    .addFilter(new JwtAuthenticationFilter2(authenticationManager))
+//                    .addFilter(new JwtAuthorizationFilter2(authenticationManager, memberRepository, new JwtUtil(new RedisUtil())));
+                    .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
             //만일 이렇게 필터들을 추가하면, 기존의 필터체인들도 똑같이 수행되나??
         }
     }
-
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }
