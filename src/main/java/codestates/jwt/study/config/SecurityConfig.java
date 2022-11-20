@@ -33,8 +33,8 @@ public class SecurityConfig {
 
                 .and()
                 .formLogin().disable()
-                .httpBasic().disable() //기본 인증 로그인 방식이다.
-                .apply(new CustomDsl())/////////////
+                .httpBasic().disable() //기본 인증 로그인 방식
+                .apply(new CustomDsl())////
                 .and()
                 .authorizeRequests()
                 .antMatchers("/login").permitAll()
@@ -49,17 +49,14 @@ public class SecurityConfig {
         return http.build();
     }
 
-    //이전에는 .addFilter(new JwtAuthenticationFilter(authenticationManager())) 메서드를 통해 쉽게 처리할 수 있었습니다.
-    //하지만 WebSecurityConfigureAdapter가 deprecated되면서 내부에 클래스를 만들어주거나 별도의 처리가 필요해졌습니다.
-    //CustomDsl이라는 내부 클래스를 만들어 .addFilter(new JwtAuthenticationFilter(authenticationManager())) 처리를 통해 해당 필터를 적용시킵니다.
-
+    //이전에는 .addFilter(new JwtAuthenticationFilter(authenticationManager())) 메서드를 통해 쉽게 처리할 수 있었다.
+    //하지만 WebSecurityConfigureAdapter가 deprecated되면서 내부에 클래스를 만들어주거나 별도의 처리가 필요해졌다.
+    //CustomDsl이라는 내부 클래스를 만들어 addFilter(new JwtAuthenticationFilter(authenticationManager())) 처리를 통해 해당 필터를 적용시킨다.
     public class CustomDsl extends AbstractHttpConfigurer<CustomDsl, HttpSecurity> {
         @Override
         public void configure(HttpSecurity builder) throws Exception {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
-            builder
-                    .addFilter(corsFilter)
-//                    .addFilter(new JwtAuthenticationFilter2(authenticationManager))
+            builder.addFilter(corsFilter)
 //                    .addFilter(new JwtAuthorizationFilter2(authenticationManager, memberRepository, new JwtUtil(new RedisUtil())));
                     .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
             //만일 이렇게 필터들을 추가하면, 기존의 필터체인들도 똑같이 수행되나??
