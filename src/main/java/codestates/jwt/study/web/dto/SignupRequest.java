@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Response {
-    private String state;
-    private String message;
+public class SignupRequest {
+    private String username;
+    private String email;
+    private String password;
 }
