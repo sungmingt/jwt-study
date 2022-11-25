@@ -1,24 +1,22 @@
 package codestates.jwt.study.domain.oauth;
 
 import codestates.jwt.study.domain.Member;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+@RequiredArgsConstructor
 public class PrincipalDetails implements UserDetails {
 
     private final Member member;
 
-    public PrincipalDetails(Member member) {
-        this.member = member;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        member.getRoleList().forEach(n -> {
+        member.getRoles().forEach(n -> {
             authorities.add(() -> n);
         });
         return authorities;

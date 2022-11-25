@@ -30,8 +30,6 @@ import static codestates.jwt.study.domain.util.JwtUtil.PREFIX;
 
 //Security filter → 권한 및 인증이 필요한 주소를 요청 시 BasicAuthenticationFilter를 반드시 진행하게 되어있습니다.
 //권한이나 인증이 필요하지 않을 경우 BasicAuthenticationFilter는 적용되지 않습니다.
-
-//인증 권한이 필요한 url에 접속할 때 이 필터가 적용되도록 할 것이다.
 @Slf4j
 public class JwtAuthorizationFilter2 extends BasicAuthenticationFilter {
 

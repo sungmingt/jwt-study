@@ -23,6 +23,7 @@ public class JwtUtil {
 
     public static final String PREFIX = "Bearer ";
     public static final String AUTHORIZATION = "Authorization";
+    public static final String EMAIL = "email";
 
     public static final long ACCESS_TOKEN_VALIDATION_SECOND = 1000L * 60 * 30;  //30분
     public static final long REFRESH_TOKEN_VALIDATION_SECOND = 1000L * 60 * 60 * 24 * 3;  //3일
@@ -34,7 +35,7 @@ public class JwtUtil {
         return PREFIX + JWT.create()
                 .withSubject(SECRET_KEY)
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDATION_SECOND))
-                .withClaim("email", email)
+                .withClaim(EMAIL, email)
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }
 
@@ -42,13 +43,12 @@ public class JwtUtil {
         return JWT.create()
                 .withSubject(SECRET_KEY)
                 .withExpiresAt(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDATION_SECOND))  ///////////////////////
-                .withClaim("email", email)
+                .withClaim(EMAIL, email)
                 .sign(Algorithm.HMAC512(SECRET_KEY));
     }
 
     public Map<String, String> verifyToken(String token) {
 
-        log.info("### verifyToken 입장");
         //토큰 만료 시 refresh token 만료여부 조회
         if (isExpired(token)) {
             log.info("### access token expired- {}", token);
@@ -76,11 +76,11 @@ public class JwtUtil {
             return Map.of(ACCESS_TOKEN_NAME, accessToken);
         }
 
-        return Map.of("email",
+        return Map.of(EMAIL,
                 JWT.require(Algorithm.HMAC512(SECRET_KEY))
                         .build()
                         .verify(token)
-                        .getClaim("email")
+                        .getClaim(EMAIL)
                         .asString());
     }
 
@@ -93,13 +93,13 @@ public class JwtUtil {
     }
 
     private String getEmail(String token) {
-        return JWT.decode(token).getClaim("email").asString();
+        return JWT.decode(token).getClaim(EMAIL).asString();
     }
 
 //    public Map<String,Object> getClaimsFromToken(String token, String keys){
 //        DecodedJWT decodedJWT = JWT.decode(token);
 //        String key = keys.equals("refresh") ? REFRESH_TOKEN_NAME : ACCESS_TOKEN_NAME;
-//        String email = decodedJWT.getClaim("email").asString();
+//        String email = decodedJWT.getClaim(EMAIL).asString();
 //        Long id = decodedJWT.getClaim("id").asLong();
 //        return Map.of("email",email,"id",id);
 //    }
