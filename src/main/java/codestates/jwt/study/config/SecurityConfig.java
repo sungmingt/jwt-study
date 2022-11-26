@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
@@ -42,7 +43,6 @@ public class SecurityConfig {
                 .antMatchers("/api/v1/admin/**").access("hasRole('ROLE_ADMIN')")
                 .antMatchers("/api/v1/user/**").authenticated()
                 .anyRequest().permitAll();
-
 //                .addFilter(corsFilter) // 추가
 //                .addFilterBefore(new FirstFilter(), BasicAuthenticationFilter.class);  //추가
 
@@ -59,12 +59,11 @@ public class SecurityConfig {
             builder.addFilter(corsFilter)
 //                    .addFilter(new JwtAuthorizationFilter2(authenticationManager, memberRepository, new JwtUtil(new RedisUtil())));
                     .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
-            //만일 이렇게 필터들을 추가하면, 기존의 필터체인들도 똑같이 수행되나??
         }
     }
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    public PasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }
